@@ -322,9 +322,9 @@ int main(int argc, char* argv[])
 	  seconds += (unsigned long long int)temp;
 	}
       else if (r == '?')
-	EXIT_USAGE (_("Invalid input"));
+	EXIT_USAGE(_("Invalid input"));
       else
-	abort ();
+	abort();
     }
   memmove(argv + 1, argv + optind, (size_t)(argc - optind + 1) * sizeof(char*));
   /* “In any case, argv[argc] is a null pointer.” [The GNU C Reference Manual] */
