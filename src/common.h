@@ -16,20 +16,33 @@
  */
 
 
+/**
+ * The pathname of this daemon.
+ */
 #ifndef AUTOHALTD_PATHNAME
 # define AUTOHALTD_PATHNAME  SBINDIR "autohaltd"
 #endif
 
+/**
+ * The pathname of the process image used for just sleeping.
+ */
 #ifndef AUTOHALTD_SLEEP_PATHNAME
 # define AUTOHALTD_SLEEP_PATHNAME  LIBEXECDIR "/" PACKAGE "/autohaltd-sleep"
 #endif
 
+/**
+ * The pathname of the process image used for shuting down
+ * if the machine is inactive.
+ */
 #ifndef AUTOHALTD_CHECK_PATHNAME
 # define AUTOHALTD_CHECK_PATHNAME  LIBEXECDIR "/" PACKAGE "/autohaltd-check"
 #endif
 
-#ifndef SHUTDOWN_PATHNAME
-# define SHUTDOWN_PATHNAME  "shutdown"
+/**
+ * The filename of the shutdown program.
+ */
+#ifndef SHUTDOWN_FILENAME
+# define SHUTDOWN_FILENAME  "shutdown"
 #endif
 
 /**
