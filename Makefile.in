@@ -17,9 +17,6 @@ LOCALES =
 # List of man page translations to install.
 MAN_LOCALES =
 
-# Uncomment this if they want another locale for the tab-completion.
-#SHELL_LOCALE =
-
 # Can change these variables with ./configure in the same why you
 # would configure them when running make.
 
@@ -90,11 +87,6 @@ ___EVERYTHING_INFO = autohaltd titlepage-data content hardcopy-copying  \
                      reusable/macros reusable/paper reusable/titlepage
 _EVERYTHING = $(foreach F,$(___EVERYTHING_INFO),doc/info/$(F).texinfo)  \
               $(__EVERYTHING_ALL_COMMON) DEPENDENCIES INSTALL NEWS
-
-# Used by mk/shell.mk
-_AUTO_COMPLETE = autohaltd
-_WITH_SHELL = yes
-_SHELL_LOCALES =
 
 # }}
 
