@@ -162,6 +162,7 @@ static int daemonise(void)
   sigfillset(&set);
   sigdelset(&set, SIGSTOP);
   sigdelset(&set, SIGCONT);
+  sigdelset(&set, SIGTERM);
   sigdelset(&set, SIGHUP);
   sigprocmask(SIG_SETMASK, &set, NULL);
   
