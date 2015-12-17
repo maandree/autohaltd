@@ -37,6 +37,9 @@ OPTIONS
 	-c, --copyright
 		Print copyright information.
 
+	-f, --foreground
+		Do not daemonise the process.
+
 RATIONALE
 	In environments where the number of computers is large,
 	you can save on the environment and save money by

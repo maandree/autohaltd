@@ -13,6 +13,9 @@ Print program name and version and exit.
 @item -c
 @itemx --copyright
 Print copyright information and exit.
+@item -f
+@itemx --foreground
+Do not daemonise the process.
 @end table
 
 Any non-option argument added before the first
