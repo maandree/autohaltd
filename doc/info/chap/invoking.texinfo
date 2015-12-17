@@ -15,6 +15,29 @@ Print program name and version and exit.
 Print copyright information and exit.
 @end table
 
+Any non-option argument added before the first
+occurring @option{--} is interpreted as the time
+it shall take, after the last user logs out,
+before the computer shutdows done. All of these
+arguments are summed up, for the full interval.
+Each of these arguments shall be a non-negative
+integer, optionally with a unit. Recognised
+units are:
+
+@table @code
+@item s
+Seconds.
+@item m
+Minutes. This is used if the unit is omitted.
+Note that @code{min} is invalid, you must use
+@code{m} precisely.
+@item h
+Hours.
+@end table
+
+If no interval is specified, the interval
+defaults to 1 hour.
+
 Any argument added after the first occurring
 @option{--} is passed to @command{shutdown}.
 @option{-h} and @code{now} will always be
@@ -24,4 +47,16 @@ message, as this would have to be added after
 unnecessary, as the computer will shutdown
 immediately, and there should not be any users
 on the machine when this happens.
+
+Example:
+@example
+autohaltd 1h 30m -- -f
+@end example
+@noindent
+Will shut down the machine 1@tie{}hour and
+30@tie{}minutes after the last user logout.
+@option{-f} will be passed to @command{shutdown}.
+In @command{sysvinit}'s implementation of
+@command{shutdown}, this means that @command{fsck}
+will be skipped at the next reboot.
 

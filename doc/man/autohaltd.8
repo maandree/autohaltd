@@ -3,21 +3,29 @@
 autohaltd \- Bring the system down when it is inactive
 .SH SYNOPSIS
 .B autohaltd
-.RI [ OPTION ]...\ [\fB\-\-\fP\ [ SHUTDOWN_ARGUMENT ]...]
+.RI [ OPTION ]...\ [ INTERVAL ]...\ [\fB\-\-\fP\ [ SHUTDOWN_ARGUMENT ]...]
 .SH DESCRIPTION
 .B autohaltd
-automatically shuts down the computer (power off),
+automatically shuts down the machine (power off),
 when noone has been login for a long enough time.
-.SH OPTIONS
+.PP
+autohaltd shall shut down the machine when the sum of
+.I INTERVAL
+has elapsed since the last user logout. Each
+.I INTERVAL
+must by a non-negative integer, optionally with a unit:
 .TP
-.BR \-h ,\  \-\-help
-Print usage information.
+.B s
+Seconds.
 .TP
-.BR \-v ,\  \-\-version
-Print program name and version.
+.B m
+Minutes (default). Note that it is
+.BR m ,
+not
+.BR min .
 .TP
-.BR \-c ,\  \-\-copyright
-Print copyright information.
+.B h
+Hours.
 .PP
 Any argument added after
 .B \-\-
@@ -33,6 +41,16 @@ after
 However, a warning message is unnecessary, as the
 computer will shutdown immediately, and there should
 not be any users on the machine when this happens.
+.SH OPTIONS
+.TP
+.BR \-h ,\  \-\-help
+Print usage information.
+.TP
+.BR \-v ,\  \-\-version
+Print program name and version.
+.TP
+.BR \-c ,\  \-\-copyright
+Print copyright information.
 .SH RATIONALE
 In environments where the number of computers is large,
 you can save on the environment and save money by

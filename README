@@ -2,11 +2,30 @@ NAME
 	autohaltd 1.0 - Bring the system down when it is inactive
 
 SYNOPSIS
-	autohaltd [OPTION]... [-- [SHUTDOWN_ARGUMENT]...]
+	autohaltd [OPTION]... [INTERVAL]... [-- [SHUTDOWN_ARGUMENT]...]
 
 DESCRIPTION
-	autohaltd automatically shuts down the computer (power off),
+	autohaltd automatically shuts down the machine (power off),
 	when noone has been login for a long enough time.
+
+	autohaltd shall shut down the machine when the sum of
+	INTERVAL has elapsed since the last user logout. Each
+	INTERVAL must by a non-negative integer, optionally
+	with a unit:
+
+	s	Seconds.
+
+	m	Minutes (default). Note that it is 'm', not 'min'.
+
+	h	Hours.
+
+	Any argument added after '--' is passed to shutdown(8).
+	'-h' and 'now' will  always be passed, at the end. You
+	cannot add a warning message, as this would have to be
+	added after 'now'. However, a warning message is
+	unnecessary, as the computer will shutdown immediately,
+	and there should not be any users on the machine when
+	this happens.
 
 OPTIONS
 	-h, --help
@@ -17,14 +36,6 @@ OPTIONS
 
 	-c, --copyright
 		Print copyright information.
-
-	Any argument added after '--' is passed to shutdown(8).
-	'-h' and 'now' will  always be passed, at the end. You
-	cannot add a warning message, as this would have to be
-	added after 'now'. However, a warning message is
-	unnecessary, as the computer will shutdown immediately,
-	and there should not be any users on the machine when
-	this happens.
 
 RATIONALE
 	In environments where the number of computers is large,
