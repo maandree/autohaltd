@@ -1,0 +1,7 @@
+@node Overview
+@chapter Overview
+
+@command{autohaltd} automatically shuts down the
+computer (power off), when noone has been login
+for a long enough time.
+

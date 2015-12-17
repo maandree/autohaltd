@@ -1,0 +1,27 @@
+@node Invoking
+@chapter Invoking
+
+@command{autohaltd} recognises the options:
+
+@table @option
+@item -h
+@itemx --help
+Print usage information and exit.
+@item -v
+@itemx --version
+Print program name and version and exit.
+@item -c
+@itemx --copyright
+Print copyright information and exit.
+@end table
+
+Any argument added after the first occurring
+@option{--} is passed to @command{shutdown}.
+@option{-h} and @code{now} will always be
+passed, at the end. You cannot add a warning
+message, as this would have to be added after
+@code{now}. However, a warning message is
+unnecessary, as the computer will shutdown
+immediately, and there should not be any users
+on the machine when this happens.
+
