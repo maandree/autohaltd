@@ -14,3 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+#ifndef AUTOHALTD_PATHNAME
+# define AUTOHALTD_PATHNAME  SBINDIR "autohaltd"
+#endif
+
+#ifndef AUTOHALTD_SLEEP_PATHNAME
+# define AUTOHALTD_SLEEP_PATHNAME  LIBEXECDIR "/" PACKAGE "/autohaltd-sleep"
+#endif
+
+#ifndef AUTOHALTD_CHECK_PATHNAME
+# define AUTOHALTD_CHECK_PATHNAME  LIBEXECDIR "/" PACKAGE "/autohaltd-check"
+#endif
+
+#ifndef SHUTDOWN_PATHNAME
+# define SHUTDOWN_PATHNAME  "shutdown"
+#endif
+
+/**
+ * The default interval.
+ */
+#ifndef AUTOHALTD_DEFAULT_INTERVAL
+# define AUTOHALTD_DEFAULT_INTERVAL  (1 * 60 * 60)  /* 1 hour */
+#endif
+

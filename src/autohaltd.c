@@ -38,15 +38,6 @@
 
 
 /**
- * The default interval.
- */
-#ifndef AUTOHALTD_DEFAULT_INTERVAL
-# define AUTOHALTD_DEFAULT_INTERVAL  (1 * 60 * 60)  /* 1 hour */
-#endif
-
-
-
-/**
  * `argv[0]` from `main`.
  */
 const char *execname;
@@ -331,8 +322,6 @@ int main(int argc, char* argv[])
   
   /* Validate interval, and possible fall back to default. */
   USAGE_ASSERT(!have_internal || seconds, "The interval cannot be zero");
-  if (!have_internal)
-    seconds = (unsigned long long int)(AUTOHALTD_DEFAULT_INTERVAL);
   
   /* Let the next process image know the interval. */
   sprintf(envval, "%llu", seconds);
