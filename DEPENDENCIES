@@ -1,0 +1,26 @@
+RUNTIME DEPENDENCIES:
+
+	shutdown(8) (your init package probably has this)
+	glibc (any libc with getopt_long)
+
+
+BUILD DEPENDENCIES:
+
+	make
+	coreutils
+	glibc (any libc with getopt_long)
+	c99
+	gettext (opt-out, for internationalisation)
+	texinfo>=4.11 (opt-out, for info, pdf, dvi, ps, and html manuals)
+	texlive-plainextra (opt-in, for pdf, dvi, and ps manuals)
+	auto-auto-complete (opt-in, for bash, fish, and zsh tab-completion)
+
+	texinfo<4.11 can be used if '@frenchspacing on' is removed.
+
+
+INSTALL DEPENDENCIES:
+
+	make
+	coreutils
+	texinfo (opt-out, for dir-entry of info manual)
+

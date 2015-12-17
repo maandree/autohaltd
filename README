@@ -1,0 +1,51 @@
+NAME
+	autohaltd 1.0 - Bring the system down when it is inactive
+
+SYNOPSIS
+	autohaltd [OPTION]...
+
+DESCRIPTION
+	autohaltd automatically shuts down the computer (halt),
+	when noone has been login for a long enough time.
+
+OPTIONS
+	-h, --help
+		Print usage information.
+
+	-v, --version
+		Print program name and version.
+
+	-c, --copyright
+		Print copyright information.
+
+	-f, --skip-fsck
+		Skip fsck(8) on next boot.
+		Requires that shutdown(8) recognises
+		-f with the same interpretation.
+
+	-F, --fsck
+		Force fsck(8) on next boot.
+		Requires that shutdown(8) recognises
+		-F with the same interpretation.
+
+RATIONALE
+	In environments where the number of computers is large,
+	you can save on the environment and save money by
+	turning of computers that are not used.
+
+SEE ALSO
+	shutdown(8)
+
+	Full documentation available locally via: info '(autohaltd)'
+
+	See INSTALL for installation instructions.
+	See DEPENDENCIES for software dependenices.
+	See COPYING for the full license used by the software.
+	See NEWS for significant differences between releases.
+
+LICENSE
+	Copying and distribution of this manual, with or without
+	modification, are permitted in any medium without royalty
+	provided the copyright notice and this notice are preserved.
+	This file is offered as-is, without any warranty.
+
