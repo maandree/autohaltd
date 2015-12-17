@@ -151,7 +151,7 @@ static int daemonise(void)
       perror(execname);
       rlimit.rlim_cur = 4 << 10;
     }
-  for (fd = 4 /* we use 3 internally */; (rlim_t)fd < rlimit.rlim_cur; fd++)
+  for (fd = 3; (rlim_t)fd < rlimit.rlim_cur; fd++)
     /* File descriptors with numbers above and including
      * `rlimit.rlim_cur` cannot be created. They cause EBADF. */
     close(fd);
@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
   
   int r, have_internal = 0, foreground = 0;
   unsigned long long int seconds = 0;
-  int pipe_rw[2];
+  char envval[3 * sizeof(seconds) + 1];
   struct option long_options[] =
     {
       {"help",       no_argument, NULL, 'h'},
@@ -334,19 +334,10 @@ int main(int argc, char* argv[])
   if (!have_internal)
     seconds = (unsigned long long int)(AUTOHALTD_DEFAULT_INTERVAL);
   
-  /* The the next process image know the interval via a pipe. */
-  if (pipe(pipe_rw))
+  /* Let the next process image know the interval. */
+  sprintf(envval, "%llu", seconds);
+  if (setenv("AUTOHALTD_INTERVAL", envval, 1))
     goto fail;
-  if (write(pipe_rw[1], &seconds, sizeof(seconds)) != sizeof(seconds))
-    goto fail;
-  if (close(pipe_rw[1]))
-    goto fail;
-  if (pipe_rw[0] != 3)
-    {
-      if (dup2(pipe_rw[0], 3) == -1)
-	goto fail;
-      close(pipe_rw[0]);
-    }
   
   /* Daemonisation. */
   if (!foreground)

@@ -55,7 +55,7 @@ _C_STD = c99
 _PEDANTIC = yes
 _BIN = autohaltd
 _OBJ_autohaltd = autohaltd
-_HEADER_DIRLEVELS = 0
+_HEADER_DIRLEVELS = 1
 _CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"'
 
 # Used by mk/i18n.mk
@@ -82,7 +82,9 @@ ___EVERYTHING_INFO = autohaltd titlepage-data content hardcopy-copying  \
                      appx/fdl appx/free-software-needs-free-documentation appx/gpl  \
                      chap/invoking chap/overview  \
                      reusable/macros reusable/paper reusable/titlepage
+___EVERYTHING_H = common
 _EVERYTHING = $(foreach F,$(___EVERYTHING_INFO),doc/info/$(F).texinfo)  \
+              $(foreach F,$(___EVERYTHING_H),src/$(F).h)  \
               $(__EVERYTHING_ALL_COMMON) DEPENDENCIES INSTALL NEWS
 
 # }}
