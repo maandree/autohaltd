@@ -2,10 +2,10 @@ NAME
 	autohaltd 1.0 - Bring the system down when it is inactive
 
 SYNOPSIS
-	autohaltd [OPTION]...
+	autohaltd [OPTION]... [-- [SHUTDOWN_ARGUMENT]...]
 
 DESCRIPTION
-	autohaltd automatically shuts down the computer (halt),
+	autohaltd automatically shuts down the computer (power off),
 	when noone has been login for a long enough time.
 
 OPTIONS
@@ -18,15 +18,13 @@ OPTIONS
 	-c, --copyright
 		Print copyright information.
 
-	-f, --skip-fsck
-		Skip fsck(8) on next boot.
-		Requires that shutdown(8) recognises
-		-f with the same interpretation.
-
-	-F, --fsck
-		Force fsck(8) on next boot.
-		Requires that shutdown(8) recognises
-		-F with the same interpretation.
+	Any argument added after '--' is passed to shutdown(8).
+	'-h' and 'now' will  always be passed, at the end. You
+	cannot add a warning message, as this would have to be
+	added after 'now'. However, a warning message is
+	unnecessary, as the computer will shutdown immediately,
+	and there should not be any users on the machine when
+	this happens.
 
 RATIONALE
 	In environments where the number of computers is large,
