@@ -326,6 +326,9 @@ int main(int argc, char* argv[])
   /* Validate interval, and possible fall back to default. */
   USAGE_ASSERT(!have_internal || seconds, "The interval cannot be zero");
   
+  /* Check privileges. */
+  USAGE_ASSERT(!getuid(), "This daemon must be run as root");
+  
   /* Let the next process image know the interval. */
   sprintf(envval, "%llu", seconds);
   if (setenv("AUTOHALTD_INTERVAL", envval, 1))
