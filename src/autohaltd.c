@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define _GNU_SOURCE /* For getopt_long. */
+#include "common.h"
+
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +42,7 @@
 /**
  * `argv[0]` from `main`.
  */
-const char *execname;
+static const char* execname;
 
 
 
@@ -317,6 +319,7 @@ int main(int argc, char* argv[])
       else
 	abort();
     }
+  USAGE_ASSERT (argc, "Command line must at least include the zeroth argument");
   memmove(argv + 1, argv + optind, (size_t)(argc - optind + 1) * sizeof(char*));
   /* “In any case, argv[argc] is a null pointer.” [The GNU C Reference Manual] */
   
@@ -333,7 +336,12 @@ int main(int argc, char* argv[])
     if (daemonise())
       goto fail;
   
-  /* TODO exec */
+  /* Get interrupted. */
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGHUP, 1);
+  
+  /* And sleep. */
+  execv(AUTOHALTD_SLEEP_PATHNAME, argv);
   
  fail:
   if (errno)
