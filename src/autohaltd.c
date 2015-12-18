@@ -330,6 +330,10 @@ int main(int argc, char* argv[])
   sprintf(envval, "%llu", seconds);
   if (setenv("AUTOHALTD_INTERVAL", envval, 1))
     goto fail;
+  /* Let the image after the next process image know the requested interval.
+   * That image will adjust AUTOHALTD_INTERVAL to not sleep unnecessarily long.  */
+  if (setenv("AUTOHALTD_INTERVAL_PROPER", envval, 1))
+    goto fail;
   
   /* Daemonisation. */
   if (!foreground)

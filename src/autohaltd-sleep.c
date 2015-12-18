@@ -43,7 +43,7 @@ static void signal_update(int signo)
 
 
 /**
- * Use by autohaltd to sleep for an extended time.
+ * Used by autohaltd to sleep for an extended time.
  * When the sleep is done, the process exec:s into
  * another images that handels the potential halt.
  * If the machine is not to halt, the process will

@@ -53,9 +53,10 @@ _VERSION = 1.0
 # Used by mk/lang-c.mk
 _C_STD = c99
 _PEDANTIC = yes
-_BIN = autohaltd autohaltd-sleep
+_BIN = autohaltd autohaltd-sleep autohaltd-check
 _OBJ_autohaltd = autohaltd
 _OBJ_autohaltd-sleep = autohaltd-sleep
+_OBJ_autohaltd-check = autohaltd-check
 _HEADER_DIRLEVELS = 1
 _CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"'
 
