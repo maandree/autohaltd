@@ -99,20 +99,12 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   while (0)
 #ifdef _HAVE_UT_TV
 # define SET_TIMESPEC(ts, u)					\
-  do								\
-    {								\
-      (ts)->tv_sec = (u)->ut_tv.tv_sec;				\
-      (ts)->tv_nsec = (long)((u)->ut_tv.tv_usec) * 1000L;	\
-    }								\
-  while (0)
+  ((ts)->tv_sec = (u)->ut_tv.tv_sec,				\
+   (ts)->tv_nsec = (long)((u)->ut_tv.tv_usec) * 1000L)
 #else
 # define SET_TIMESPEC(ts, u)					\
-  do								\
-    {								\
-      (ts)->tv_sec = (u)->ut_time;				\
-      (ts)->tv_nsec = 0;					\
-    }								\
-  while (0)
+  ((ts)->tv_sec = (u)->ut_time,					\
+   (ts)->tv_nsec = 0)
 #endif
   
   struct utmpx* u;
