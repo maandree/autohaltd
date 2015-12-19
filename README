@@ -47,7 +47,7 @@ OPTIONS
 		Do not daemonise the process.
 		Only valid for autohaltd.
 
-NOTE
+NOTES
 	This package will not function properly unless your
 	login programs logs logins to utmp. Be sure to test it
 	properly before deploying. It also preferred, but not
