@@ -55,6 +55,15 @@ Print copyright information.
 .TP
 .BR \-f ,\  \-\-foreground
 Do not daemonise the process.
+.SH NOTE
+This package will not function properly unless your
+login programs logs logins to
+.BR utmp .
+Be sure to test it properly before deploying. It
+also preferred, but not required, that logouts are
+recorded to
+.B utmp
+in some customary fashion.
 .SH RATIONALE
 In environments where the number of computers is large,
 you can save on the environment and save money by
