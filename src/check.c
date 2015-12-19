@@ -311,6 +311,6 @@ void halt(int argc, char* argv[])
 # pragma GCC diagnostic pop
 #endif
   
-  execv(SHUTDOWN_FILENAME, args);
+  execvp(SHUTDOWN_FILENAME, args);
 }
 
