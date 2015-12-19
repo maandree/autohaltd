@@ -57,7 +57,7 @@ _SBIN = autohaltd
 _LIBEXEC = autohaltd-sleep autohaltd-check
 _OBJ_autohaltd = autohaltd
 _OBJ_autohaltd-sleep = autohaltd-sleep
-_OBJ_autohaltd-check = autohaltd-check
+_OBJ_autohaltd-check = autohaltd-check check
 _HEADER_DIRLEVELS = 1
 _CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"'
 
