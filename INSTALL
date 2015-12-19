@@ -81,7 +81,7 @@ to install. This rules are available:
 │ COMPILATION │ INSTALLATION        │ DESCRIPTION                                │
 ├─────────────┼─────────────────────┼────────────────────────────────────────────┤
 │ base        │ install-base        │ Install be basics:                         │
-│   cmd       │   install-cmd       │   Install the autohaltd command.           │
+│   cmd       │   install-cmd       │   Install the autohaltd commands.          │
 │             │   install-copyright │   Install GNU GPL version 3.               │
 │ doc         │ install-doc         │ Include all manuals:                       │
 │   info      │   install-info      │   Include info manual. (Texinfo)           │

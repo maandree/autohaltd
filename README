@@ -4,14 +4,20 @@ NAME
 SYNOPSIS
 	autohaltd [OPTION]... [INTERVAL]... [-- [SHUTDOWN_ARGUMENT]...]
 
+	autohalt [OPTION]... [INTERVAL]... [-- [SHUTDOWN_ARGUMENT]...]
+
 DESCRIPTION
 	autohaltd automatically shuts down the machine (power off),
-	when noone has been login for a long enough time.
+	when noone has been logged in for a long enough time.
+
+	autohalt shuts down the machine if noone has been logged in
+	for a long enough time.
 
 	autohaltd shall shut down the machine when the sum of
-	INTERVAL has elapsed since the last user logout. Each
-	INTERVAL must by a non-negative integer, optionally
-	with a unit:
+	INTERVAL has elapsed since the last user logout. autohalt
+	shall shut down the machine only if the sum of INTERVAL
+	has elapsed since the last user logout. Each INTERVAL must
+	be a non-negative integer, optionally with a unit:
 
 	s	Seconds.
 
@@ -39,6 +45,7 @@ OPTIONS
 
 	-f, --foreground
 		Do not daemonise the process.
+		Only valid for autohaltd.
 
 RATIONALE
 	In environments where the number of computers is large,

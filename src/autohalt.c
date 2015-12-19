@@ -16,6 +16,7 @@
  */
 #define _GNU_SOURCE /* For getopt_long. */
 #include "common.h"
+#include "check.h"
 #include "info.h"
 
 #include <getopt.h>
@@ -46,7 +47,6 @@
 static const char* execname;
 
 
-
 /**
  * Print usage information.
  * 
@@ -58,7 +58,7 @@ static int print_help(void)
 		  "\t%s [OPTION]... [INTERVAL]... [-- [SHUTDOWN_ARGUMENT]...]\n"
 		  "\n"
 		  "DESCRIPTION\n"
-		  "\tautohaltd shall shut down the machine when the sum of\n"
+		  "\tautohalt shall shut down the machine onlyif the sum of\n"
 		  "\tINTERVAL has elapsed since the last user logout. Each\n"
 		  "\tINTERVAL must by a non-negative integer, optionally\n"
 		  "\twith a unit:\n"
@@ -73,141 +73,13 @@ static int print_help(void)
 		  "\t-h, --help         Print usage information.\n"
 		  "\t-v, --version      Print program name and version.\n"
 		  "\t-c, --copyright    Print copyright information.\n"
-		  "\t-f, --foreground   Do not daemonise the process.\n"
 		  "\n"),
 		execname) < 0 ? -1 : 0;
 }
 
 
 /**
- * Daemonise the process
- * 
- * @return  0 on success, -1 on error.
- */
-static int daemonise(void)
-{
-  struct rlimit rlimit;
-  int fd, signo, closeerr;
-  int pipe_rw[2];
-  pid_t pid;
-  char* env;
-  char b = 0;
-  sigset_t set;
-  
-  if (getrlimit(RLIMIT_NOFILE, &rlimit))
-    {
-      perror(execname);
-      rlimit.rlim_cur = 4 << 10;
-    }
-  for (fd = 3; (rlim_t)fd < rlimit.rlim_cur; fd++)
-    /* File descriptors with numbers above and including
-     * `rlimit.rlim_cur` cannot be created. They cause EBADF. */
-    close(fd);
-  
-  for (signo = 1; signo < _NSIG; signo++)
-    signal(signo, SIG_DFL);
-  
-  sigfillset(&set);
-  sigdelset(&set, SIGSTOP);
-  sigdelset(&set, SIGCONT);
-  sigdelset(&set, SIGTERM);
-  sigdelset(&set, SIGHUP);
-  sigprocmask(SIG_SETMASK, &set, NULL);
-  
-  /* Nothing in the environment can negatively impact us, and we may need it. */
-  
-  if (pipe(pipe_rw))
-    return -1;
-  if (dup2(pipe_rw[0], 10) == -1)
-    return -1;
-  close(pipe_rw[0]);
-  pipe_rw[0] = 10;
-  if (dup2(pipe_rw[1], 11) == -1)
-    return -1;
-  close(pipe_rw[1]);
-  pipe_rw[1] = 11;
-  
-  pid = fork();
-  if (pid == -1)
-    return -1;
-  
-  if (pid <= 0)
-    {
-      close(pipe_rw[0]);
-      
-      if (setsid() == -1)
-	perror(execname);
-      
-      pid = fork();
-      if (pid == -1)
-	perror(execname);
-      
-      if (pid > 0)
-	exit(0);
-      
-      closeerr = (isatty(2) || (errno == EBADF));
-      if ((env = getenv("DAEMONS_LOG_TO_STDERR")))
-	if (!strcasecmp(env, "yes") || !strcasecmp(env, "y") || !strcmp(env, "1"))
-	  closeerr = 0;
-      fd = open(DEVDIR "/null", O_RDWR);
-      if (fd == -1)
-	perror(execname);
-      else
-	{
-	  if (fd != 0)  close(0);
-	  if (fd != 1)  close(1);
-	  if (closeerr)
-	    if (fd != 2)  close(2);
-	  if (dup2(fd, 0) == -1)  perror(execname);
-	  if (dup2(fd, 1) == -1)  perror(execname);
-	  if (closeerr)
-	    if (dup2(fd, 2) == -1)  perror(execname);
-	  if (fd > 2)  close(fd);
-	}
-      
-      umask(0);
-      
-      if (chdir("/"))
-	perror(execname);
-      
-      fd = open(RUNDIR "/autohaltd.pid", O_WRONLY | O_CREAT | O_EXCL, 0644);
-      if (fd == -1)
-	{
-	  if (errno == EEXIST)
-	    {
-	      fprintf(stderr, _("%s: PID file already exists: %s\n"),
-		      execname, RUNDIR "/autohaltd.pid");
-	      errno = 0;
-	      return -1;
-	    }
-	  perror(execname);
-	}
-      else
-	{
-	  pid = getpid();
-	  dprintf(fd, "%lli\n", (long long int)pid);
-	  close(fd);
-	}
-      
-      /* We cannot drop privileges. We need them! */
-      
-      if (write(pipe_rw[1], &b, (size_t)1) <= 0)
-	return -1;
-      if (close(pipe_rw[1]))
-	return -1;
-    }
-  else
-    {
-      close(pipe_rw[1]);
-      exit(read(pipe_rw[0], &b, (size_t)1) <= 0);
-    }
-  
-  return 0;
-}
-
-
-/**
- * Shut down the machine when it has been inactive for an extended time.
+ * Shut down the machine if it has been inactive for an extended time.
  * 
  * @param   argc  The number of elements in `argv`.
  * @param   argv  Command line arguments, run with `--help` for more information.
@@ -220,15 +92,13 @@ int main(int argc, char* argv[])
 #define USAGE_ASSERT(ASSERTION, MSG)  \
   do { if (!(ASSERTION))  EXIT_USAGE(MSG); } while (0)
   
-  int r, have_internal = 0, foreground = 0;
+  int r, have_internal = 0;
   unsigned long long int seconds = 0;
-  char envval[3 * sizeof(seconds) + 1];
   struct option long_options[] =
     {
       {"help",       no_argument, NULL, 'h'},
       {"version",    no_argument, NULL, 'v'},
       {"copyright",  no_argument, NULL, 'c'},
-      {"foreground", no_argument, NULL, 'f'},
       {NULL,         0,           NULL,  0 }
     };
   
@@ -240,15 +110,14 @@ int main(int argc, char* argv[])
 #endif
   
   /* Parse command line. */
-  execname = argc ? *argv : "autohaltd";
+  execname = argc ? *argv : "autohalt";
   for (;;)
     {
-      r = getopt_long(argc, argv, "-hvcf", long_options, NULL);
+      r = getopt_long(argc, argv, "-hvc", long_options, NULL);
       if      (r == -1)   break;
       else if (r == 'h')  return -(print_help());
-      else if (r == 'v')  return -(print_version("autohaltd"));
+      else if (r == 'v')  return -(print_version("autohalt"));
       else if (r == 'c')  return -(print_copyright());
-      else if (r == 'f')  foreground = 1;
       else if (r ==  1 )  /* `'-'` would have be some much better than `1`. */
 	{
 	  /* Parse interval parameter. */
@@ -275,39 +144,29 @@ int main(int argc, char* argv[])
 	abort();
     }
   USAGE_ASSERT (argc, "Command line must at least include the zeroth argument");
-  memmove(argv + 1, argv + optind, (size_t)(argc - optind + 1) * sizeof(char*));
-  /* “In any case, argv[argc] is a null pointer.” [The GNU C Reference Manual] */
+  memmove(argv + 1, argv + optind, (size_t)(argc - optind) * sizeof(char*));
   
-  /* Validate interval. */
+  /* Validate interval, and possible fall back to default. */
   USAGE_ASSERT(!have_internal || seconds, "The interval cannot be zero");
+  if (seconds == 0)
+    seconds = (unsigned long long int)(AUTOHALTD_DEFAULT_INTERVAL);
   
   /* Check privileges. */
   USAGE_ASSERT(!getuid(), "This daemon must be run as root");
   
-  /* Let the next process image know the interval. */
-  sprintf(envval, "%llu", seconds);
-  if (setenv("AUTOHALTD_INTERVAL", envval, 1))
+  /* How long ago was it that anyone logout? */
+  r = is_time_for_halt(&seconds);
+  if (r < 0)
     goto fail;
-  /* Let the image after the next process image know the requested interval.
-   * That image will adjust AUTOHALTD_INTERVAL to not sleep unnecessarily long.  */
-  if (setenv("AUTOHALTD_INTERVAL_PROPER", envval, 1))
-    goto fail;
+  if (r == 0)
+    return 0;
   
-  /* Daemonisation. */
-  if (!foreground)
-    if (daemonise())
-      goto fail;
-  
-  /* Get interrupted. */
-  siginterrupt(SIGTERM, 1);
-  siginterrupt(SIGHUP, 1);
-  
-  /* And sleep. */
-  execv(AUTOHALTD_SLEEP_PATHNAME, argv);
+  /* Halt. */
+  halt(argc, argv);
   
  fail:
   if (errno)
-    perror(execname);
+    perror(*argv);
   return 1;
 }
 

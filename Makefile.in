@@ -53,11 +53,12 @@ _VERSION = 1.0
 # Used by mk/lang-c.mk
 _C_STD = c99
 _PEDANTIC = yes
-_SBIN = autohaltd
+_SBIN = autohaltd autohalt
 _LIBEXEC = autohaltd-sleep autohaltd-check
-_OBJ_autohaltd = autohaltd
+_OBJ_autohaltd = autohaltd info
 _OBJ_autohaltd-sleep = autohaltd-sleep
 _OBJ_autohaltd-check = autohaltd-check check
+_OBJ_autohalt = autohalt check info
 _HEADER_DIRLEVELS = 1
 _CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"'
 
@@ -75,7 +76,7 @@ _HTML_FILES = Free-Software-Needs-Free-Documentation.html  GNU-Free-Documentatio
 
 # Used by mk/man.mk
 _MAN_PAGE_SECTIONS = 8
-_MAN_8 = autohaltd
+_MAN_8 = autohaltd autohalt
 
 # Used by mk/copy.mk
 _COPYING = COPYING
@@ -85,7 +86,7 @@ ___EVERYTHING_INFO = autohaltd titlepage-data content hardcopy-copying  \
                      appx/fdl appx/free-software-needs-free-documentation appx/gpl  \
                      chap/invoking chap/overview  \
                      reusable/macros reusable/paper reusable/titlepage
-___EVERYTHING_H = common
+___EVERYTHING_H = common check info
 _EVERYTHING = $(foreach F,$(___EVERYTHING_INFO),doc/info/$(F).texinfo)  \
               $(foreach F,$(___EVERYTHING_H),src/$(F).h)  \
               $(__EVERYTHING_ALL_COMMON) DEPENDENCIES INSTALL NEWS

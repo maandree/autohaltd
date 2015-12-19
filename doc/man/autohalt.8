@@ -1,16 +1,16 @@
-.TH AUTOHALTD 8 AUTOHALTD
+.TH AUTOHALT 8 AUTOHALT
 .SH NAME
-autohaltd \- Bring the system down when it is inactive
+autohalt \- Bring the system down if it is inactive
 .SH SYNOPSIS
-.B autohaltd
+.B autohalt
 .RI [ OPTION ]...\ [ INTERVAL ]...\ [\fB\-\-\fP\ [ SHUTDOWN_ARGUMENT ]...]
 .SH DESCRIPTION
-.B autohaltd
-automatically shuts down the machine (power off),
-when noone has been logged in for a long enough time.
+.B autohalt
+shuts down the machine (power off), if noone has been
+logged in for a long enough time.
 .PP
-.N autohaltd
-shall shut down the machine when the sum of
+.B autohalt
+shuts down the machine only if the sum of
 .I INTERVAL
 has elapsed since the last user logout. Each
 .I INTERVAL
@@ -52,15 +52,12 @@ Print program name and version.
 .TP
 .BR \-c ,\  \-\-copyright
 Print copyright information.
-.TP
-.BR \-f ,\  \-\-foreground
-Do not daemonise the process.
 .SH RATIONALE
 In environments where the number of computers is large,
 you can save on the environment and save money by
 turning of computers that are not used.
 .SH "SEE ALSO"
-.BR autohalt (8),
+.BR autohaltd (8),
 .BR shutdown (8)
 .PP
 Full documentation available locally via: info \(aq(autohaltd)\(aq
