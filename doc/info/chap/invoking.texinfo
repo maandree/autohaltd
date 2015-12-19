@@ -1,7 +1,8 @@
 @node Invoking
 @chapter Invoking
 
-@command{autohaltd} recognises the options:
+@command{autohaltd} and @command{autohalt}
+recognises the options:
 
 @table @option
 @item -h
@@ -16,6 +17,8 @@ Print copyright information and exit.
 @item -f
 @itemx --foreground
 Do not daemonise the process.
+Only @command{autohaltd} recognises this
+option.
 @end table
 
 Any non-option argument added before the first

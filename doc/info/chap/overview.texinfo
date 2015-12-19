@@ -2,6 +2,17 @@
 @chapter Overview
 
 @command{autohaltd} automatically shuts down the
-computer (power off), when noone has been login
-for a long enough time.
+computer (power off), when noone has been logged
+in for a long enough time.
+
+@command{autohalt} shuts down the computer, if
+noone has been logged in for a long enough time.
+
+@command{autohaltd} is a daemon, whilst
+@command{autohalt} is a system command counterpart
+that is useful if you rather utilise @command{crond}
+than run an extra daemon. The advantage with
+@command{autohaltd} over @command{autohalt}, that
+is is better at minimising the time the computer
+is turned on without being used.
 
