@@ -36,13 +36,13 @@
 
 
 /**
- * Check whether a NORMAL_PROCESS record represents
- * an active login.
+ * Check whether a NORMAL_PROCESS record represents a login.
  * 
- * @param   u  the login record.
- * @return     1 if it is an active login, 0 otherwise.
+ * @param   u       The login record.
+ * @param   active  Will be set to 1 if active, 0 if inactive.
+ * @return          1 if it is a login, 0 otherwise.
  */
-static int is_login(struct utmpx* u)
+static int is_login(struct utmpx* u, int* active)
 {
   static int line_initalised = 0;
   static char line[sizeof(DEVDIR "/") / sizeof(char) + UT_LINESIZE];
@@ -73,7 +73,8 @@ static int is_login(struct utmpx* u)
       if (memcmp(&ttyattr, &attr, sizeof(attr)))
 	break;
     }
-  return (i > 2);
+  *active = (i > 2);
+  return 1;
 }
 
 
@@ -99,19 +100,26 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   while (0)
 #ifdef _HAVE_UT_TV
 # define SET_TIMESPEC(ts, u)					\
-  ((ts)->tv_sec = (u)->ut_tv.tv_sec,				\
+  ((ts)->tv_sec = (time_t)((u)->ut_tv.tv_sec),			\
    (ts)->tv_nsec = (long)((u)->ut_tv.tv_usec) * 1000L)
 #else
 # define SET_TIMESPEC(ts, u)					\
-  ((ts)->tv_sec = (u)->ut_time,					\
+  ((ts)->tv_sec = (time_t)((u)->ut_time),			\
    (ts)->tv_nsec = 0)
 #endif
   
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wpadded"
+#endif
   struct utmpx* u;
-  int rc = 0, saved_errno;
+  int rc = 0, saved_errno, active;
   pid_t* logins = NULL;
   size_t logins_ptr = 0;
   size_t logins_size = 0;
+  struct utmpx* obsolete = NULL;
+  size_t obsolete_ptr = 0;
+  size_t obsolete_size = 0;
   size_t i;
   void* new;
   struct timespec delta;
@@ -119,6 +127,9 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   struct timespec oldtime;
   struct timespec newtime;
   int have_oldtime = 0;
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
   
   if (clock_gettime(CLOCK_REALTIME, &now))
     return -1;
@@ -136,8 +147,10 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
        * to USER_PROCESS. LOGIN_PROCESS indicates getty, or a login
        * that has been be completed. */
       case USER_PROCESS:
-	if (!is_login(u)) /* TODO obsolete records should be updated (important) */
+	if (!is_login(u, &active))
 	  continue;
+	if (!active)
+	  goto inactive_login;
 	if (logins_ptr == logins_size)
 	  {
 	    logins_size = logins_size ? (logins_size << 1) : 16;
@@ -149,6 +162,17 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	logins[logins_ptr++] = u->ut_pid;
 	if (rc < INT_MAX)
 	  rc++;
+	break;
+      inactive_login:
+	if (obsolete_ptr == obsolete_size)
+	  {
+	    obsolete_size = obsolete_size ? (obsolete_size << 1) : 16;
+	    new = realloc(obsolete, obsolete_size * sizeof(*obsolete));
+	    if (new == NULL)
+	      goto fail;
+	    obsolete = new;
+	  }
+	obsolete[obsolete_ptr++] = *u;
 	break;
 	
       case DEAD_PROCESS:
@@ -163,7 +187,6 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	if ((0 < rc) && (rc < INT_MAX))
 	  rc--;
 	SET_TIMESPEC(duration, u);
-	printf("LOGOUT %ji.%09li\n", (intmax_t)(duration->tv_sec), duration->tv_nsec);
 	break;
 	
       case BOOT_TIME:
@@ -203,10 +226,24 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   duration->tv_nsec = now.tv_nsec - duration->tv_nsec;
   ADJUST_NSEC(duration);
   
+  /* Update obsolete records. */
+  for (i = 0; i < obsolete_ptr; i++)
+    {
+      obsolete[i].ut_type = DEAD_PROCESS;
+#ifdef _HAVE_UT_TV
+      obsolete[i].ut_tv.tv_sec = (int32_t)(now.tv_sec);
+      obsolete[i].ut_tv.tv_usec = (int32_t)(now.tv_nsec / 1000L);
+#else
+      obsolete[i].ut_time = now.tv_sec;
+#endif
+      (void) pututxline(obsolete + i);
+    }
+  
  done:
   saved_errno = errno;
   endutxent();
   free(logins);
+  free(obsolete);
   errno = saved_errno;
   return rc;
   
