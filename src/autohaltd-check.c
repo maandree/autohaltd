@@ -274,14 +274,6 @@ int main(int argc, char* argv[])
   char** args;
   struct timespec duration;
   
-  /* {{{{{{{{{{{{{{{{{{{{{{{{{{{ FIXME (this is for testing) */
-  r = get_number_of_logins_and_last_logout(&duration);
-  if (r < 0)
-    return  printf("%i\n", errno), perror(""), 1;
-  printf("%i, %ji.%09li\n", r, (intmax_t)(duration.tv_sec), (intmax_t)(duration.tv_nsec));
-  return 0;
-  /* }}}}}}}}}}}}}}}}}}}}}}}}}}} */
-  
   /* Block signals. This process image is ephemeral. */
   signal(SIGHUP, SIG_IGN);
   siginterrupt(SIGHUP, 0);
