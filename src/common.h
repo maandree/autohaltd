@@ -41,8 +41,12 @@
 /**
  * The filename of the shutdown program.
  */
-#ifndef SHUTDOWN_FILENAME
-# define SHUTDOWN_FILENAME  "shutdown"
+#ifndef DEBUG
+# ifndef SHUTDOWN_FILENAME
+#  define SHUTDOWN_FILENAME  "shutdown"
+# endif
+#else
+# define SHUTDOWN_FILENAME  "echo"
 #endif
 
 /**

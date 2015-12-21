@@ -63,7 +63,7 @@ _OBJ_autohaltd-sleep = autohaltd-sleep
 _OBJ_autohaltd-check = autohaltd-check check
 _OBJ_autohalt = autohalt check info
 _HEADER_DIRLEVELS = 1
-_CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"'
+_CPPFLAGS = -D'PACKAGE="$(PKGNAME)"' -D'PROGRAM_VERSION="$(_VERSION)"' $(foreach _,$(DEBUG),-D'DEBUG=1')
 
 # Used by mk/i18n.mk
 _SRC = $(foreach B,$(_BIN),$(foreach F,$(_OBJ_$(B)),$(F).c))
