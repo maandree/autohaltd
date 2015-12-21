@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
     seconds = (unsigned long long int)(AUTOHALTD_DEFAULT_INTERVAL);
   
   /* Check privileges. */
-  USAGE_ASSERT(!getuid(), "This daemon must be run as root");
+  USAGE_ASSERT(!getuid(), "This program must be run as root");
   
   /* How long ago was it that anyone logout? */
   r = is_time_for_halt(&seconds);
