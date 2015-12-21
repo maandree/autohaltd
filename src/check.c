@@ -139,6 +139,7 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
     return -1;
   *duration = now;
   memset(&delta, 0, sizeof(delta));
+  DEBUF_PRINT_TIME("Current time", *duration);
   
   setutxent();
   
@@ -153,6 +154,15 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
       case USER_PROCESS:
 	if (!is_login(u, &active))
 	  continue;
+#ifdef DEBUG
+	fprintf(stderr, "Login: pid=%ji, user=%s, line=%s, host=%s, active=%s\n",
+		(intmax_t)(u->ut_pid), u->ut_line, u->ut_user, u->ut_host, (active ? "yes" : "no"));
+	{
+	  struct timespec ts;
+	  SET_TIMESPEC(&ts, u);
+	  DEBUF_PRINT_TIME("Login time", ts);
+	}
+#endif
 	if (!active)
 	  goto inactive_login;
 	if (logins_ptr == logins_size)
@@ -187,6 +197,10 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	    break;
 	if (i == logins_ptr)
 	  continue;
+#ifdef DEBUG
+	fprintf(stderr, "Logout: pid=%ji, type=%s\n", (intmax_t)(u->ut_pid),
+		u->ut_type == DEAD_PROCESS ? "dead" : u->ut_type == LOGIN_PROCESS ? "login" : "init");
+#endif
 	memmove(logins + i, logins + i + 1, (--logins_ptr - i) * sizeof(*logins));
 	if ((0 < rc) && (rc < INT_MAX))
 	  rc--;
@@ -249,6 +263,8 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 #else
       obsolete[i].ut_time = now.tv_sec;
 #endif
+      obsolete[i].ut_exit.e_termination = 0; /* Assume normal exit. But we have no idea. */
+      obsolete[i].ut_exit.e_exit = 0;
       (void) pututxline(obsolete + i);
     }
   
