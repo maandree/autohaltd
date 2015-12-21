@@ -1,0 +1,4 @@
+How does its work with display managers?
+
+Add a ssh-quirk: the registered PID for ssh logins, is the parent process to the actual login.
+
