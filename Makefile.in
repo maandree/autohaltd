@@ -28,6 +28,9 @@ MAN_LOCALES =
 # Additional options for compiling DVI, PDF, and PostScript manuals.
 TEXINFO_FLAGS =
 
+# Additional options for compiling info and HTML manuals.
+INFO_FLAGS =
+
 # The name of the package as it should be installed.
 PKGNAME = autohaltd
 

@@ -26,7 +26,7 @@ license is included in the section entitled ``GNU Free Documentation License''.
 @include titlepage-data.texinfo
 
 @c  You can change the title of the document in dir by compiling with
-@c    TEXINFO_FLAGS='--texinfo="@set CATEGORY your_new_category"'
+@c    INFO_FLAGS='-c CATEGORY=your_new_category'
 @ifclear CATEGORY
 @set CATEGORY Daemons
 @end ifclear
