@@ -207,15 +207,16 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	for (i = 0; i < logins_ptr; i++)
 	  if (logins[i] == u->ut_pid)
 	    break;
-	if (i == logins_ptr)
-	  continue;
 #ifdef DEBUG
 	fprintf(stderr, "Logout: pid=%ji, type=%s\n", (intmax_t)(u->ut_pid),
 		u->ut_type == DEAD_PROCESS ? "dead" : u->ut_type == LOGIN_PROCESS ? "login" : "init");
 #endif
-	memmove(logins + i, logins + i + 1, (--logins_ptr - i) * sizeof(*logins));
-	if ((0 < rc) && (rc < INT_MAX))
-	  rc--;
+	if (i < logins_ptr)
+	  {
+	    memmove(logins + i, logins + i + 1, (--logins_ptr - i) * sizeof(*logins));
+	    if ((0 < rc) && (rc < INT_MAX))
+	      rc--;
+	  }
 	SET_TIMESPEC(duration, u);
 	memset(&delta, 0, sizeof(delta));
 	DEBUF_PRINT_TIME("Logout time", *duration);
