@@ -1,5 +1,5 @@
 NAME
-	autohaltd 0 - Bring the system down when it is inactive
+	autohaltd 0.1 - Bring the system down when it is inactive
 
 SYNOPSIS
 	autohaltd [OPTION]... [INTERVAL]... [-- [SHUTDOWN_ARGUMENT]...]
