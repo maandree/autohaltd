@@ -67,9 +67,21 @@ static int is_login(struct utmpx* u, int* active)
     {
       sprintf(fdbuf, "%s/%ji/fd/%i", PROCDIR, (intmax_t)(u->ut_pid), i);
       if (stat(fdbuf, &attr))
-	break;
+	{
+#ifdef DEBUG
+	  perror("stat:ing file descriptor");
+#endif
+	  break;
+	}
       if (memcmp(&ttyattr, &attr, sizeof(attr)))
-	break;
+	{
+#ifdef DEBUG
+	  char* path = realpath(fdbuf, NULL);
+	  fprintf(stderr, "File descriptor %i points elsewhere: %s, instead of /dev/%s\n", i, path, line_);
+	  free(path);
+#endif
+	  break;
+	}
     }
   *active = (i > 2);
   return 1;
