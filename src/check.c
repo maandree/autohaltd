@@ -105,6 +105,12 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   ((ts)->tv_sec = (time_t)((u)->ut_time),			\
    (ts)->tv_nsec = 0)
 #endif
+#ifdef DEBUG
+# define DEBUF_PRINT_TIME(label, ts)				\
+  fprintf(stderr, "%s: %lli.%09lis\n", label, (unsigned long long int)((ts).tv_sec), (ts).tv_nsec)
+#else
+# define DEBUF_PRINT_TIME(label, ts)  /* Do nothing. */
+#endif
   
 #ifdef __GNUC__
 # pragma GCC diagnostic push
@@ -185,17 +191,21 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	if ((0 < rc) && (rc < INT_MAX))
 	  rc--;
 	SET_TIMESPEC(duration, u);
+	memset(&delta, 0, sizeof(delta));
+	DEBUF_PRINT_TIME("Logout time", *duration);
 	break;
 	
       case BOOT_TIME:
 	have_oldtime = 0;
 	memset(&delta, 0, sizeof(delta));
 	SET_TIMESPEC(duration, u);
+	DEBUF_PRINT_TIME("Boot time", *duration);
 	break;
 	
       case OLD_TIME:
 	have_oldtime = 1;
 	SET_TIMESPEC(&oldtime, u);
+	DEBUF_PRINT_TIME("Old time", oldtime);
 	break;
 	
       case NEW_TIME:
@@ -203,12 +213,15 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
 	  continue;
 	have_oldtime = 0;
 	SET_TIMESPEC(&newtime, u);
+	DEBUF_PRINT_TIME("New time", newtime);
 	newtime.tv_sec -= oldtime.tv_sec;
 	newtime.tv_nsec -= oldtime.tv_nsec;
 	ADJUST_NSEC(&newtime);
+	DEBUF_PRINT_TIME("New time - old time", newtime);
 	delta.tv_sec += newtime.tv_sec;
 	delta.tv_nsec += newtime.tv_nsec;
 	ADJUST_NSEC(&delta);
+	DEBUF_PRINT_TIME("Delta time", delta);
 	break;
       default:
 	continue;
@@ -219,10 +232,12 @@ static int get_number_of_logins_and_last_logout(struct timespec* duration)
   duration->tv_sec -= delta.tv_sec;
   duration->tv_nsec -= delta.tv_nsec;
   ADJUST_NSEC(duration);
+  DEBUF_PRINT_TIME("Last logout, delta-adjusted", *duration);
   
   duration->tv_sec = now.tv_sec - duration->tv_sec;
   duration->tv_nsec = now.tv_nsec - duration->tv_nsec;
   ADJUST_NSEC(duration);
+  DEBUF_PRINT_TIME("Time since last logout", *duration);
   
   /* Update obsolete records. */
   for (i = 0; i < obsolete_ptr; i++)
@@ -270,12 +285,23 @@ int is_time_for_halt(unsigned long long int* seconds)
   r = get_number_of_logins_and_last_logout(&duration);
   if (r < 0)
     return -1;
+#ifdef DEBUG
+  fprintf(stderr, "Required idle time: %lli.%09lis\n", *seconds, 0L);
+  fprintf(stderr, "Current idle time:  %lli.%09lis\n",
+	  (unsigned long long int)(duration.tv_sec), duration.tv_nsec);
+#endif
   if ((unsigned long long int)(duration.tv_sec) < *seconds)
     {
       *seconds -= (unsigned long long int)(duration.tv_sec);
+#ifdef DEBUG
+      fprintf(stderr, "Check again in:     %lli.%09lis\n", *seconds, 0L);
+#endif
       return 0;
     }
   /* Has everyone logged out? */
+#ifdef DEBUG
+  fprintf(stderr, "Number of active logins: %i\n", r);
+#endif
   if (r > 0)
     return 0;
   
