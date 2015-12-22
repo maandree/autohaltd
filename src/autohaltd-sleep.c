@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
   while (seconds > 0)
     {
       if (seconds > 65535ULL)
-	partial_seconds = 65535;
+	partial_seconds = 65535U;
       else
 	partial_seconds = (unsigned)seconds;
       seconds -= partial_seconds - sleep(partial_seconds);
